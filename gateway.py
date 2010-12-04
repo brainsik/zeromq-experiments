@@ -20,9 +20,13 @@ class ZMQClient(object):
 
     def doRead(self):
         while self.zsock.getsockopt(zmq.EVENTS) & zmq.POLLIN:
-            self.zsock.recv()  # header
-            data = self.zsock.recv()
-            self.deferred.callback(data)
+            try:
+                self.zsock.recv(flags=zmq.NOBLOCK)  # header
+                data = self.zsock.recv(flags=zmq.NOBLOCK)
+                self.deferred.callback(data)
+            except zmq.ZMQError as e:
+                if e.errno != zmq.EAGAIN:
+                    raise
 
     def send(self, msg):
         self.zsock.send("", zmq.SNDMORE)  # delimiter

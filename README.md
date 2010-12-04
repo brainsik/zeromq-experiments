@@ -6,7 +6,7 @@ A proof of concept showing we can connect a [Twisted](http://twistedmatrix.com/)
 Requirements
 ============
 
-To run these scripts you must use version 2.1.0 (or newer) of ZeroMQ and PyZMQ. The ZMQ_FD and ZMQ_EVENTS sockopts are not in 2.0.x.
+To run these scripts you must use version 2.1.0 (or newer) of ZeroMQ and PyZMQ. The `ZMQ_FD` and `ZMQ_EVENTS` sockopts are not in 2.0.x.
 
 *   [Download the ZeroMQ 2.1.0 development (beta) release](http://www.zeromq.org/intro:get-the-software)
 *   [Clone the PyZMQ 2.1.0dev bindings](https://github.com/zeromq/pyzmq/)

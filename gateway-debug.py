@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import time
+import uuid
 from select import select
 
 import zmq
@@ -12,37 +13,44 @@ context = zmq.Context()
 class ZMQClient(object):
 
     def __init__(self, zsock):
-        self.zsock = zsock
-        self._fd = self.zsock.getsockopt(zmq.FD)
-        self.deferred = None
+        self._zsock = zsock
+
+        self._fd = self._zsock.getsockopt(zmq.FD)
+        self._requests = {}
 
     def fileno(self):
         return self._fd
 
     def doRead(self):
-        print "!! fd EVENT !!"
+        print "gateway: !! fd EVENT !!"
         print_status(callLater=False)
-        time.sleep(0.15)
         print_status(callLater=False)
-        while self.zsock.getsockopt(zmq.EVENTS) & zmq.POLLIN:
+        while self._zsock.getsockopt(zmq.EVENTS) & zmq.POLLIN:
             try:
-                data = self.zsock.recv(flags=zmq.NOBLOCK)
-                self.deferred.callback(data)
+                if self._zsock.socket_type == zmq.XREQ:
+                    self._zsock.recv(flags=zmq.NOBLOCK)  # header
+                client_id, data = self._zsock.recv_multipart(flags=zmq.NOBLOCK)
+                self._requests.pop(client_id).callback(data)
             except zmq.ZMQError as e:
                 if e.errno != zmq.EAGAIN:
                     raise
 
     def send(self, msg):
-        self.zsock.send("ping")
-        self.deferred = defer.Deferred()
-        return self.deferred
+        client_id = uuid.uuid4().hex
+
+        if self._zsock.socket_type == zmq.XREQ:
+            self._zsock.send("", zmq.SNDMORE)  # delimiter
+        self._zsock.send_multipart([client_id, "ping"])
+
+        self._requests[client_id] = defer.Deferred()
+        return self._requests[client_id]
 
     def connectionLost(self, reason):
         reactor.removeReader(self)
         print "connectionLost:", reason
 
     def logPrefix(self):
-        pass
+        return ""
 
 zsock = context.socket(zmq.REQ)
 zsock.connect("tcp://localhost:2010")

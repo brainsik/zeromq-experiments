@@ -3,6 +3,8 @@ What is this?
 
 A proof of concept showing we can connect a [Twisted](http://twistedmatrix.com/) client to a [ZeroMQ](http://www.zeromq.org/) server. Uses a ZeroMQ socket file descriptor with Twisted's reactor.
 
+Thanks to [Eric Allen](https://github.com/epall) for help getting this working.
+
 Requirements
 ============
 
@@ -31,3 +33,13 @@ This is how you can run these scripts and the output you should see:
     twisted: received pong
 
 It was run inside a virtualenv using Python 2.7 (via MacPorts) and Twisted 10.2.0.
+
+Caveat
+======
+
+There is currently a race condition where sometimes the ZMQ_FD triggers and
+resets before Twisted notices. ZMQ_EVENTS says the socket is readable, but
+Twisted never calls doRead() so we never notice. Its unclear whether this is a
+bug in ZeroMQ or condition we have to take care of on the Twisted side. I'm
+investigating.
+

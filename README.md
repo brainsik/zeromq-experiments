@@ -27,8 +27,8 @@ This is how you can run these scripts and the output you should see:
     (zmq)$ python twisted_client.py
     twisted: sending ping
     gateway: forwarding ping request
-    zeromq: got ping
-    zeromq: sent pong
+    zeromq: got 4523f3fcafd94d0c8f31217a88346f77 ping
+    zeromq: sent 4523f3fcafd94d0c8f31217a88346f77 pong
     gateway: forwarding pong response
     twisted: received pong
 

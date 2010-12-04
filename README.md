@@ -30,4 +30,4 @@ This is how you can run these scripts and the output you should see:
     gateway: forwarding pong response
     twisted: received pong
 
-This was run in a virtualenv of Python 2.7 from MacPorts.
+It was run inside a virtualenv using Python 2.7 (via MacPorts) and Twisted 10.2.0.

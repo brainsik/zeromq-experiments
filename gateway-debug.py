@@ -43,6 +43,7 @@ class ZMQClient(object):
         self._zsock.send_multipart([client_id, "ping"])
 
         self._requests[client_id] = defer.Deferred()
+        self._zsock.getsockopt(zmq.EVENTS)
         return self._requests[client_id]
 
     def connectionLost(self, reason):
